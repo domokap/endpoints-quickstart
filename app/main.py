@@ -34,8 +34,11 @@ def airportName():
 
 @app.route('/status', methods=['POST'])
 def status():
-    """Return `Success!`"""
-    return "Success!", 200
+    """Return POST request body."""
+    post_body = request.args.get('status')
+    if post_body is None:
+      return 'No body received.', 400
+    return post_body, 200
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
