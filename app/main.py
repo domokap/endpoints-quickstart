@@ -32,5 +32,10 @@ def airportName():
       return 'IATA code not found : %s' % iata_code, 400
     return maybe_name, 200
 
+@app.route('/status', methods=['POST'])
+def status():
+    """Return `Success!`"""
+    return "Success!", 200
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
