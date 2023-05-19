@@ -40,16 +40,18 @@ paths:
           description: "The IATA code is invalid or missing."
   "/echo":
     post:
-      description: "Updates the status message."
+      description: "Return request body."
       operationId: "echo"
       consumes:
         - text/plain
       parameters:
         - in: body
-          name: echo
+          name: request_body
           required: true
           schema:
             type: string
       responses:
         200:
           description: "Success."
+          schema:
+            type: string

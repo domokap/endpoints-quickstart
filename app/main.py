@@ -33,10 +33,12 @@ def airportName():
     return maybe_name, 200
 
 @app.route('/echo', methods=['POST'])
-def status():
+def echo():
     """Return POST request body."""
-    post_body = request.args.get('echo')
-    return post_body, 200
+    result = request.get_data()
+    if result is None:
+       return 'No body provided.', 400
+    return result, 200
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
