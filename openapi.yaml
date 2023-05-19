@@ -39,3 +39,18 @@ paths:
             type: string
         400:
           description: "The IATA code is invalid or missing."
+  "/status":
+    post:
+      summary: Updates the status message.
+      consumes:
+        - text/plain
+      parameters:
+        - 
+          name: status
+          in: body
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success!
