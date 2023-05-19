@@ -32,12 +32,10 @@ def airportName():
       return 'IATA code not found : %s' % iata_code, 400
     return maybe_name, 200
 
-@app.route('/status', methods=['POST'])
+@app.route('/echo', methods=['POST'])
 def status():
     """Return POST request body."""
-    post_body = request.args.get('status')
-    if post_body is None:
-      return 'No body received.', 400
+    post_body = request.args.get('echo')
     return post_body, 200
 
 if __name__ == '__main__':

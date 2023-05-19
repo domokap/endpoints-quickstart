@@ -27,9 +27,8 @@ paths:
       description: "Get the airport name for a given IATA code."
       operationId: "airportName"
       parameters:
-        -
+        - in: query
           name: iataCode
-          in: query
           required: true
           type: string
       responses:
@@ -39,19 +38,18 @@ paths:
             type: string
         400:
           description: "The IATA code is invalid or missing."
-  "/status":
+  "/echo":
     post:
       description: "Updates the status message."
-      operationId: "status"
+      operationId: "echo"
       consumes:
         - text/plain
       parameters:
-        - 
-          name: status
-          in: body
+        - in: body
+          name: echo
           required: true
           schema:
             type: string
       responses:
         200:
-          description: "Success!"
+          description: "Success."
