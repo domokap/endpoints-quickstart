@@ -41,7 +41,8 @@ paths:
           description: "The IATA code is invalid or missing."
   "/status":
     post:
-      summary: Updates the status message.
+      description: "Updates the status message."
+      operationId: "status"
       consumes:
         - text/plain
       parameters:
