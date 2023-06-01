@@ -39,11 +39,10 @@ def echo():
     result = request.get_data()
     if result is None:
        return 'No body provided.', 400
-    if len(result) < 1000:
-      storage_client = storage.Client(project='geoott-gov-finops-cc-003')
-      bucket = storage_client.bucket('nbcu-finops-data-repo')
-      blob = bucket.blob('echo_body.txt')
-      blob.upload_from_string(result)
+    storage_client = storage.Client(project='geoott-gov-finops-cc-003')
+    bucket = storage_client.bucket('nbcu-finops-data-repo')
+    blob = bucket.blob('echo_body.txt')
+    blob.upload_from_string(result)
     return result, 200
 
 if __name__ == '__main__':
