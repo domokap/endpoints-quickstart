@@ -13,29 +13,17 @@
 # limitations under the License.
 
 import logging
-
+import json
+from urllib.parse import unquote
 from flask import Flask
 from flask import request
-from airports import Airports
 from google.cloud import storage
 
 app = Flask(__name__)
-airport_util = Airports()
-
-@app.route('/airportName', methods=['GET'])
-def airportName():
-    """Given an airport IATA code, return that airport's name."""
-    iata_code = request.args.get('iataCode')
-    if iata_code is None:
-      return 'No IATA code provided.', 400
-    maybe_name = airport_util.get_airport_by_iata(iata_code)
-    if maybe_name is None:
-      return 'IATA code not found : %s' % iata_code, 400
-    return maybe_name, 200
 
 @app.route('/echo', methods=['POST'])
 def echo():
-    """Return POST request body."""
+    """Return POST request body and write to GCS file."""
     result = request.get_data()
     if result is None:
        return 'No body provided.', 400
@@ -44,6 +32,21 @@ def echo():
     blob = bucket.blob('echo_body.txt')
     blob.upload_from_string(result)
     return result, 200
+
+@app.route('/finbot', methods=['POST'])
+def process_response():
+    """Process POST request from Slack."""
+    result = request.get_data()
+    if result is None:
+       return 'No body provided.', 400
+    decoded = unquote(result)
+    response_json = json.loads(decoded[8:].replace("+"," "))
+    msg = response_json["actions"]
+    storage_client = storage.Client(project='geoott-gov-finops-cc-003')
+    bucket = storage_client.bucket('nbcu-finops-data-repo')
+    blob = bucket.blob('finbot_response.txt')
+    blob.upload_from_string(msg)
+    return msg, 200
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)

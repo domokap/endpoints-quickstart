@@ -55,3 +55,20 @@ paths:
           description: "Success."
           schema:
             type: string
+  "/finbot":
+    post:
+      description: "Accepts responses to anomalies and monthly reports"
+      operationId: "finbotResponse"
+      consumes:
+        - text/plain
+      parameters:
+        - in: body
+          name: request_body
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Success."
+          schema:
+            type: string
