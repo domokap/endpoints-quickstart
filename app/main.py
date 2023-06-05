@@ -34,7 +34,7 @@ def echo():
     return result, 200
 
 @app.route('/finbot', methods=['POST'])
-def process_response():
+def finbotResponse():
     """Process POST request from Slack."""
     result = request.get_data()
     if result is None:
