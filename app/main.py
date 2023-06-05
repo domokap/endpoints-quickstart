@@ -47,7 +47,7 @@ def finbotResponse():
     blob = bucket.blob('finbot_response.txt')
     # blob.upload_from_string(msg)
     # return msg, 200
-    blob.upload_from_string(result)
+    blob.upload_from_string(unquote(bytes(str(result),"utf-8")))
     return result, 200
 
 if __name__ == '__main__':
