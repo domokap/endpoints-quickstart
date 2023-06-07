@@ -47,5 +47,5 @@ def write_to_gcs(contents, file, report_type):
     blob.upload_from_string(contents)
     return True
 
-def respond():
+def respond(response_url):
     return True
