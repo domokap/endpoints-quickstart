@@ -28,7 +28,7 @@ def process_message(action, metadata):
 def process_button():
     return True
 
-def write_to_gcs(contents, file, report_type):
+def write_to_gcs(payload, file, report_type):
     storage_client = storage.Client(project='geoott-gov-finops-cc-003')
     bucket = storage_client.bucket('nbcu-finops-data-repo')
     blob = bucket.blob(file)
@@ -39,7 +39,7 @@ def write_to_gcs(contents, file, report_type):
         contents = ""
         print(f'{file} created')
     if report_type == "monthly":
-        contents += json.dumps(contents) + '\n'
+        contents += json.dumps(payload) + '\n'
     elif report_type == "anomaly":
         contents += ""
     else:
