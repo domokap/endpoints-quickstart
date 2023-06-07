@@ -14,6 +14,7 @@
 
 import logging
 import json
+import finbot
 from urllib.parse import unquote
 from flask import Flask
 from flask import request
