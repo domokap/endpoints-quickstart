@@ -42,6 +42,7 @@ def finbotResponse():
        return 'No body provided.', 400
     decoded = unquote(result.decode("utf-8"))[8:].replace("+"," ")
     response_json = json.loads(decoded)
+    finbot.process_response(response_json)
     storage_client = storage.Client(project='geoott-gov-finops-cc-003')
     bucket = storage_client.bucket('nbcu-finops-data-repo')
     blob = bucket.blob('finbot_response.txt')
