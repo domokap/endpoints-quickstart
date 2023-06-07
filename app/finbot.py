@@ -18,7 +18,7 @@ def process_message(action, metadata, user):
         response = metadata["event_payload"]
         response["message"] = action["value"]
         response["user"] = user
-        write_to_gcs(response, "mom_responses.jsonl", "monthly")
+        write_to_gcs(response, "monthly_responses.jsonl", "monthly")
         return True
     elif metadata["event_type"] == "anomaly_report":
         return True
