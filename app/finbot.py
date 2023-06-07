@@ -5,7 +5,7 @@ from google.cloud import storage
 def process_response(body):
     for action in body["actions"]:
         if action["action_id"] == "response_message":
-            process_message(action, body["message"]["metadata"])
+            process_message(action, body["message"]["metadata"], body["user"]["username"])
             respond(body["response_url"])
         elif action["action_id"] == "response_button":
             process_button()
@@ -13,10 +13,11 @@ def process_response(body):
             return False
     return True
 
-def process_message(action, metadata):
+def process_message(action, metadata, user):
     if metadata["event_type"] == "monthly_report":
         response = metadata["event_payload"]
         response["message"] = action["value"]
+        response["user"] = user
         write_to_gcs(response, "mom_responses.jsonl", "monthly")
         return True
     elif metadata["event_type"] == "anomaly_report":
