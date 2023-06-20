@@ -14,13 +14,14 @@ def process_response(body):
     return True
 
 def process_message(action, metadata, user):
+    response = metadata["event_payload"]
+    response["message"] = action["value"]
+    response["user"] = user
     if metadata["event_type"] == "monthly_report":
-        response = metadata["event_payload"]
-        response["message"] = action["value"]
-        response["user"] = user
         write_to_gcs(response, "monthly_responses.jsonl", "monthly")
         return True
     elif metadata["event_type"] == "anomaly_report":
+        write_to_gcs(response, "anomaly_responses.jsonl", "anomaly")
         return True
     else:
         return False
@@ -42,7 +43,7 @@ def write_to_gcs(payload, file, report_type):
     if report_type == "monthly":
         contents += json.dumps(payload) + '\n'
     elif report_type == "anomaly":
-        contents += ""
+        contents += json.dumps(payload) + '\n'
     else:
         return False
     blob.upload_from_string(contents)
