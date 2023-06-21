@@ -1,6 +1,6 @@
 import requests
 import json
-import datetime
+from datetime import datetime
 from google.cloud import storage
 
 def process_response(body):
@@ -18,7 +18,7 @@ def process_message(action, metadata, user):
     response = metadata["event_payload"]
     response["message"] = action["value"]
     response["user"] = user
-    response["time"] = datetime.fromtimestamp(int(action["action_ts"]))
+    response["time"] = datetime.fromtimestamp(int(action["action_ts"])).isoformat()
     if metadata["event_type"] == "monthly_report":
         write_to_gcs(response, "monthly_responses.jsonl", "monthly")
         return True
