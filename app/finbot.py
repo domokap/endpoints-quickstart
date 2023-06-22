@@ -63,5 +63,5 @@ def respond(body):
         "blocks": body["message"]["blocks"],
         "metadata": body["message"]["metadata"]
     }
-    requests.post(body["response_url"],payload)
+    requests.post(body["response_url"],json = payload)
     return True
