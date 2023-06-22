@@ -63,10 +63,17 @@ def respond(body):
     #     "blocks": body["message"]["blocks"],
     #     "metadata": body["message"]["metadata"]
     # }
-    payload = """{
-        "replace_original": false,
-        "text": "RESPONSE RECEIVED",
-        "response_type": "in_channel"
-    }"""
+    # payload = """{
+    #     "replace_original": false,
+    #     "text": "RESPONSE RECEIVED",
+    #     "response_type": "in_channel"
+    # }"""
+    # print(requests.post(body["response_url"], json=json.loads(payload)).json())
+    payload = json.dumps({
+        "replace_original": True,
+        "text": body["message"]["text"] + "TEST",
+        "blocks": body["message"]["blocks"],
+        "metadata": body["message"]["metadata"]
+    })
     print(requests.post(body["response_url"], json=json.loads(payload)).json())
     return True
