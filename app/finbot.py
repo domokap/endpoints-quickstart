@@ -15,7 +15,7 @@ def process_response(body):
     return True
 
 def process_message(action, metadata, user):
-    if action["value"] == "":
+    if action["value"] is None:
         return False
     response = metadata["event_payload"]
     response["message"] = action["value"]
