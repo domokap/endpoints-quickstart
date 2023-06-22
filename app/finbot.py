@@ -75,5 +75,6 @@ def respond(body):
         "blocks": body["message"]["blocks"],
         "metadata": body["message"]["metadata"]
     })
+    print(payload)
     print(requests.post(body["response_url"], json=json.loads(payload)).json())
     return True
