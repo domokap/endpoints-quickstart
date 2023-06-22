@@ -1,13 +1,15 @@
 import requests
 import json
+import copy
 from datetime import datetime
 from google.cloud import storage
 
 def process_response(body):
+    response = copy.deepcopy(body)
     for action in body["actions"]:
         if "response_message" in action["action_id"]:
             if process_message(action, body["message"]["metadata"], body["user"]["username"]):
-                respond(body)
+                respond(response)
         elif "response_button" in action["action_id"]:
             process_button()
         else:
@@ -56,25 +58,19 @@ def write_to_gcs(payload, file, report_type):
     blob.upload_from_string(contents)
     return True
 
-def respond(body):
-    # payload = {
-    #     "replace_original": "true",
-    #     "text": body["message"]["text"] + "TEST",
-    #     "blocks": body["message"]["blocks"],
-    #     "metadata": body["message"]["metadata"]
-    # }
+def respond(response):
     # payload = """{
     #     "replace_original": false,
     #     "text": "RESPONSE RECEIVED",
     #     "response_type": "in_channel"
     # }"""
-    # print(requests.post(body["response_url"], json=json.loads(payload)).json())
+    # print(requests.post(response["response_url"], json=json.loads(payload)).json())
     payload = json.dumps({
         "replace_original": True,
-        "text": body["message"]["text"] + "TEST",
-        "blocks": body["message"]["blocks"],
-        "metadata": body["message"]["metadata"]
+        "text": response["message"]["text"] + " TEST",
+        "blocks": response["message"]["blocks"],
+        "metadata": response["message"]["metadata"]
     })
     print(payload)
-    print(requests.post(body["response_url"], json=json.loads(payload)).json())
+    print(requests.post(response["response_url"], json=json.loads(payload)).json())
     return True
