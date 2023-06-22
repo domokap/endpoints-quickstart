@@ -59,9 +59,9 @@ def write_to_gcs(payload, file, report_type):
 def respond(body):
     payload = {
         "replace_original": "true",
-        "text": body["message"]["text"],
+        "text": body["message"]["text"] + "TEST",
         "blocks": body["message"]["blocks"],
         "metadata": body["message"]["metadata"]
     }
-    requests.post(body["response_url"],json = payload)
+    requests.post(body["response_url"], json=payload)
     return True
