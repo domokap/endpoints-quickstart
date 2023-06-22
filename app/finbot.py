@@ -7,7 +7,7 @@ def process_response(body):
     for action in body["actions"]:
         if "response_message" in action["action_id"]:
             if process_message(action, body["message"]["metadata"], body["user"]["username"]):
-                respond(body["response_url"])
+                respond(body)
         elif "response_button" in action["action_id"]:
             process_button()
         else:
@@ -56,5 +56,12 @@ def write_to_gcs(payload, file, report_type):
     blob.upload_from_string(contents)
     return True
 
-def respond(response_url):
+def respond(body):
+    payload = {
+        "replace_original": "true",
+        "text": body["message"]["text"],
+        "blocks": body["message"]["blocks"],
+        "metadata": body["message"]["metadata"]
+    }
+    requests.post(body["response_url"],payload)
     return True
