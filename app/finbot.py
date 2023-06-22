@@ -6,8 +6,8 @@ from google.cloud import storage
 def process_response(body):
     for action in body["actions"]:
         if "response_message" in action["action_id"]:
-            process_message(action, body["message"]["metadata"], body["user"]["username"])
-            respond(body)
+            if process_message(action, body["message"]["metadata"], body["user"]["username"]):
+                respond(body)
         elif "response_button" in action["action_id"]:
             process_button()
         else:
@@ -57,11 +57,11 @@ def write_to_gcs(payload, file, report_type):
     return True
 
 def respond(body):
-    payload = {
-        "replace_original": "true",
-        "text": body["message"]["text"] + "TEST",
-        "blocks": body["message"]["blocks"],
-        "metadata": body["message"]["metadata"]
-    }
-    print(requests.post(body["response_url"], json=payload))
+    # payload = {
+    #     "replace_original": "true",
+    #     "text": body["message"]["text"] + "TEST",
+    #     "blocks": body["message"]["blocks"],
+    #     "metadata": body["message"]["metadata"]
+    # }
+    # print(requests.post(body["response_url"], json=payload))
     return True
