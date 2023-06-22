@@ -5,16 +5,18 @@ from google.cloud import storage
 
 def process_response(body):
     for action in body["actions"]:
-        if action["action_id"] == "response_message":
-            process_message(action, body["message"]["metadata"], body["user"]["username"])
-            respond(body["response_url"])
-        elif action["action_id"] == "response_button":
+        if "response_message" in action["action_id"]:
+            if process_message(action, body["message"]["metadata"], body["user"]["username"]):
+                respond(body["response_url"])
+        elif "response_button" in action["action_id"]:
             process_button()
         else:
             return False
     return True
 
 def process_message(action, metadata, user):
+    if action["value"] == "":
+        return False
     response = metadata["event_payload"]
     response["message"] = action["value"]
     response["user"] = user
@@ -23,6 +25,9 @@ def process_message(action, metadata, user):
         write_to_gcs(response, "monthly_responses.jsonl", "monthly")
         return True
     elif metadata["event_type"] == "anomaly_report":
+        acc_id = action["action_id"]
+        account = acc_id[acc_id.index("-")+1:]
+        response["ids"] = response["ids"][account]
         write_to_gcs(response, "anomaly_responses.jsonl", "anomaly")
         return True
     else:
