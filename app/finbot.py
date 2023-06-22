@@ -6,8 +6,8 @@ from google.cloud import storage
 def process_response(body):
     for action in body["actions"]:
         if "response_message" in action["action_id"]:
-            if process_message(action, body["message"]["metadata"], body["user"]["username"]):
-                respond(body)
+            process_message(action, body["message"]["metadata"], body["user"]["username"])
+            respond(body)
         elif "response_button" in action["action_id"]:
             process_button()
         else:
@@ -63,5 +63,5 @@ def respond(body):
         "blocks": body["message"]["blocks"],
         "metadata": body["message"]["metadata"]
     }
-    requests.post(body["response_url"], json=payload)
+    print(requests.post(body["response_url"], json=payload))
     return True
