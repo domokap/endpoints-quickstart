@@ -64,4 +64,9 @@ def respond(body):
     #     "metadata": body["message"]["metadata"]
     # }
     # print(requests.post(body["response_url"], json=payload))
+    payload = {
+        "text": "RESPONSE RECEIVED",
+        "response_type": "in_channel"
+    }
+    print(requests.post(body["response_url"], json=payload).json())
     return True
