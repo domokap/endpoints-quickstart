@@ -83,7 +83,7 @@ def respond(response, action):
         }
     }
     if payload["metadata"]["event_payload"][action["action_id"]] == 1:
-        payload["blocks"].insert(payload["blocks"].index(next(i for i in response["message"]["blocks"] if i["block_id"] == action["block_id"])), ack_block)
+        payload["blocks"].insert(payload["blocks"].index(next(i for i in response["message"]["blocks"] if i["block_id"] == action["block_id"]))+1, ack_block)
     payload = json.dumps(payload)
     print(payload)
     print(requests.post(response["response_url"], json=json.loads(payload)).json())
