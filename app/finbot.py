@@ -81,7 +81,7 @@ def respond(response, action):
     	    "type": "mrkdwn",
     	    "text": "*Response Received* :white_check_mark: Send extra context as required; view all responses in thread :arrow_down:"
         }
-    },
+    }
     if payload["metadata"]["event_payload"][action["action_id"]] == 1:
         payload["blocks"].insert(payload["blocks"].index(next(i for i in response["message"]["blocks"] if i["block_id"] == action["block_id"])), ack_block)
     payload = json.dumps(payload)
