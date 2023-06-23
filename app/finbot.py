@@ -72,9 +72,21 @@ def respond(response, action):
         "metadata": response["message"]["metadata"]
     }
     payload["metadata"]["event_payload"][action["action_id"]] = payload["metadata"]["event_payload"].get(action["action_id"], 0) + 1
-    if payload["metadata"]["event_payload"][action["action_id"]] == 1:
-        next(i for i in response["message"]["blocks"] if i["block_id"] == action["block_id"])["label"]["text"] += " :white_tick:"
+    # if payload["metadata"]["event_payload"][action["action_id"]] == 1:
+    #     label = next(i for i in response["message"]["blocks"] if i["block_id"] == action["block_id"])["label"]["text"]
+    #     next(i for i in response["message"]["blocks"] if i["block_id"] == action["block_id"])["label"]["text"] = ":white_check_mark: " + label
+    ack_block = {
+        "type": "section",
+        "text": {
+    	    "type": "mrkdwn",
+    	    "text": "*Response Received* :white_check_mark: Send extra context as required; view all responses in thread :arrow_down:"
+        }
+    },
+    payload["blocks"].insert(payload["blocks"].index(next(i for i in response["message"]["blocks"] if i["block_id"] == action["block_id"])), ack_block)
     payload = json.dumps(payload)
     print(payload)
     print(requests.post(response["response_url"], json=json.loads(payload)).json())
+    return True
+
+def relay():
     return True
