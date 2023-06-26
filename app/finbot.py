@@ -83,13 +83,13 @@ def respond(response, action):
     num_responses = payload["metadata"]["event_payload"][action["action_id"]]
     if num_responses == 1:
         payload["blocks"].insert(action_index+1, ack_block)
-    if num_responses == max_responses+1:
+    if num_responses > max_responses:
         reject_text = f":negative_squared_cross_mark: _Maximum number of responses ({max_responses}) received for_ `" + account + "`"
         payload["blocks"][action_index+1]["text"]["text"] = reject_text
     payload = json.dumps(payload)
     print(payload)
     print(requests.post(response["response_url"], json=json.loads(payload)).json())
-    if num_responses > max_responses+1:
+    if num_responses > max_responses:
         return False
     return True
 
