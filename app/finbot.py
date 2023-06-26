@@ -22,7 +22,8 @@ def process_response(body):
 def process_message(action, metadata, user):
     if action["value"] is None:
         return False
-    response = metadata["event_payload"]
+    # response = metadata["event_payload"]
+    response = {k:v for k,v in metadata["event_payload"] if "response_message" not in k}
     response["message"] = action["value"]
     response["user"] = user
     response["responseTime"] = datetime.fromtimestamp(int(float(action["action_ts"]))).isoformat()
