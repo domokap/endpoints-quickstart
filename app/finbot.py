@@ -89,7 +89,7 @@ def respond(response, action):
     payload = json.dumps(payload)
     print(payload)
     print(requests.post(response["response_url"], json=json.loads(payload)).json())
-    if num_responses < max_responses+1:
+    if num_responses > max_responses+1:
         return False
     return True
 
