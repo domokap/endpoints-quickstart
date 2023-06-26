@@ -95,9 +95,14 @@ def respond(response, action):
 def relay(response, action):
     acc_id = action["action_id"]
     account = acc_id[acc_id.index("/")+1:]
+    user = response["user"]["username"]
+    time = datetime.fromtimestamp(int(float(action["action_ts"]))).isoformat()
     payload = {
         "replace_original": False,
-        "text": "`" + account + "` - " + action["value"],
+        "text": f"""_Account:_ `{account}`
+        _User: {user}_
+        _Time: {time}_
+        _Response: {action["value"]}_""",
         "response_type": "in_channel",
         "thread_ts": response["message"]["ts"]
     }
