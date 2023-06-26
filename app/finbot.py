@@ -100,10 +100,7 @@ def relay(response, action):
     time = datetime.fromtimestamp(int(float(action["action_ts"]))).isoformat()
     payload = {
         "replace_original": False,
-        "text": f"""_Account:_ `{account}`
-        _User: {user}_
-        _Time: {time}_
-        _Response: {action["value"]}_""",
+        "text": f"""_Account:_ `{account}`\n_User: {user}_\n_Time: {time}_\n_Response: {action["value"]}_""",
         "response_type": "in_channel",
         "thread_ts": response["message"]["ts"]
     }
