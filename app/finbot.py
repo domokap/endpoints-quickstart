@@ -80,15 +80,16 @@ def respond(response, action):
     action_index = payload["blocks"].index(next(i for i in response["message"]["blocks"] if i["block_id"] == action["block_id"]))
     max_responses = 5
     payload["metadata"]["event_payload"][action["action_id"]] = payload["metadata"]["event_payload"].get(action["action_id"], 0) + 1
-    if payload["metadata"]["event_payload"][action["action_id"]] == 1:
+    num_responses = payload["metadata"]["event_payload"][action["action_id"]]
+    if num_responses == 1:
         payload["blocks"].insert(action_index+1, ack_block)
-    if payload["metadata"]["event_payload"][action["action_id"]] == max_responses+1:
-        reject_text = ":negative_squared_tick: _Maximum number of responses (5) received for_ `" + account + "`"
+    if num_responses == max_responses+1:
+        reject_text = f":negative_squared_cross_mark: _Maximum number of responses ({max_responses}) received for_ `" + account + "`"
         payload["blocks"][action_index+1]["text"]["text"] = reject_text
     payload = json.dumps(payload)
     print(payload)
     print(requests.post(response["response_url"], json=json.loads(payload)).json())
-    if payload["metadata"]["event_payload"][action["action_id"]] > max_responses+1:
+    if num_responses < max_responses+1:
         return False
     return True
 
