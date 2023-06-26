@@ -8,8 +8,11 @@ def process_response(body):
     response = copy.deepcopy(body)
     for action in body["actions"]:
         if "response_message" in action["action_id"]:
-            if process_message(action, body["message"]["metadata"], body["user"]["username"]):
-                respond(response, action)
+            # if process_message(action, body["message"]["metadata"], body["user"]["username"]):
+            #     respond(response, action)
+            if respond(response, action):
+                relay(response, action)
+                process_message(action, body["message"]["metadata"], body["user"]["username"])
         elif "response_button" in action["action_id"]:
             process_button()
         else:
@@ -89,5 +92,15 @@ def respond(response, action):
     print(requests.post(response["response_url"], json=json.loads(payload)).json())
     return True
 
-def relay():
+def relay(response, action):
+    acc_id = action["action_id"]
+    payload = {
+        "replace_original": False,
+        "text": "`" + acc_id[acc_id.index("/")+1:] + "` - " + action["value"],
+        "response_type": "in_channel",
+        "thread_ts": response["message"]["ts"]
+    }
+    payload = json.dumps(payload)
+    print(payload)
+    print(requests.post(response["response_url"], json=json.loads(payload)).json())
     return True
