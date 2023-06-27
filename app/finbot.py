@@ -8,8 +8,6 @@ def process_response(body):
     response = copy.deepcopy(body)
     for action in body["actions"]:
         if "response_message" in action["action_id"]:
-            # if process_message(action, body["message"]["metadata"], body["user"]["username"]):
-            #     respond(response, action)
             if respond(response, action):
                 relay(response, action)
                 process_message(action, body["message"]["metadata"], body["user"]["username"])
@@ -22,8 +20,6 @@ def process_response(body):
 def process_message(action, metadata, user):
     if action["value"] is None:
         return False
-    # response = metadata["event_payload"]
-    # response = {k:v for k,v in metadata["event_payload"] if "response_message" not in k}
     response = {k:v for k,v in metadata["event_payload"].items() if k in ["team", "ids"]}
     response["message"] = action["value"]
     response["user"] = user
