@@ -20,7 +20,7 @@ def process_response(body):
 def process_message(action, metadata, user):
     if action["value"] is None:
         return False
-    response = {k:v for k,v in metadata["event_payload"].items() if k in ["team", "ids"]}
+    response = {k:v for k,v in metadata["event_payload"].items() if k in ["team", "ids", "date"]}
     response["message"] = action["value"]
     response["user"] = user
     response["responseTime"] = datetime.fromtimestamp(int(float(action["action_ts"]))).isoformat()
@@ -74,7 +74,6 @@ def respond(response, action):
         }
     }
     acc_id = action["action_id"]
-    account = acc_id[acc_id.index("/")+1:]
     action_index = payload["blocks"].index(next(i for i in response["message"]["blocks"] if i["block_id"] == action["block_id"]))
     max_responses = 5
     payload["metadata"]["event_payload"][action["action_id"]] = payload["metadata"]["event_payload"].get(action["action_id"], 0) + 1
@@ -82,7 +81,11 @@ def respond(response, action):
     if num_responses == 1:
         payload["blocks"].insert(action_index+1, ack_block)
     if num_responses > max_responses:
-        reject_text = f":negative_squared_cross_mark: _Maximum number of responses ({max_responses}) received for_ `" + account + "`"
+        if payload["metadata"]["event_type"] == "anomaly_report":
+            account = acc_id[acc_id.index("/")+1:]
+            reject_text = f":negative_squared_cross_mark: _Maximum number of responses ({max_responses}) received for_ `" + account + "`"
+        elif payload["metadata"]["event_type"] == "monthly_report":
+            reject_text = f":negative_squared_cross_mark: _Maximum number of responses ({max_responses}) received for this report"
         payload["blocks"][action_index+1]["text"]["text"] = reject_text
     payload = json.dumps(payload)
     print(payload)
