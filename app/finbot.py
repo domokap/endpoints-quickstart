@@ -95,13 +95,17 @@ def respond(response, action):
     return True
 
 def relay(response, action):
-    acc_id = action["action_id"]
-    account = acc_id[acc_id.index("/")+1:]
     user = response["user"]["username"]
     time = datetime.fromtimestamp(int(float(action["action_ts"]))).isoformat()
+    acc_id = action["action_id"]
+    if response["message"]["metadata"]["event_type"] == "anomaly_report":
+        account = acc_id[acc_id.index("/")+1:]
+        text = f"""_Account:_ `{account}`\n_User: {user}_\n_Time: {time}_\n_Response: {action["value"]}_"""
+    elif response["message"]["metadata"]["event_type"] == "monthly_report":
+        text = f"""User: {user}_\n_Time: {time}_\n_Response: {action["value"]}_"""
     payload = {
         "replace_original": False,
-        "text": f"""_Account:_ `{account}`\n_User: {user}_\n_Time: {time}_\n_Response: {action["value"]}_""",
+        "text": text,
         "response_type": "in_channel",
         "thread_ts": response["message"]["ts"]
     }
