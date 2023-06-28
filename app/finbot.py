@@ -102,7 +102,7 @@ def relay(response, action):
         account = acc_id[acc_id.index("/")+1:]
         text = f"""_Account:_ `{account}`\n_User: {user}_\n_Time: {time}_\n_Response: {action["value"]}_"""
     elif response["message"]["metadata"]["event_type"] == "monthly_report":
-        text = f"""User: {user}_\n_Time: {time}_\n_Response: {action["value"]}_"""
+        text = f"""_User: {user}_\n_Time: {time}_\n_Response: {action["value"]}_"""
     payload = {
         "replace_original": False,
         "text": text,
