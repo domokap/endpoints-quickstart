@@ -83,9 +83,10 @@ def respond(response, action):
     if num_responses > max_responses:
         if payload["metadata"]["event_type"] == "anomaly_report":
             account = acc_id[acc_id.index("/")+1:]
-            reject_text = f":negative_squared_cross_mark: _Maximum number of responses ({max_responses}) received for_ `" + account + "`"
+            reject_text = f"*Max Responses ({max_responses}) for* `{account}` :negative_squared_cross_mark: View all responses in thread :arrow_down:"
         elif payload["metadata"]["event_type"] == "monthly_report":
-            reject_text = f":negative_squared_cross_mark: _Maximum number of responses ({max_responses}) received for this report"
+            team = payload["metadata"]["event_payload"]["team"]
+            reject_text = f"*Max Responses ({max_responses}) for* `{team.upper()}` :negative_squared_cross_mark: View all responses in thread :arrow_down:"
         payload["blocks"][action_index+1]["text"]["text"] = reject_text
     payload = json.dumps(payload)
     print(payload)
