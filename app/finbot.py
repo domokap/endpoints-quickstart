@@ -20,7 +20,7 @@ def process_response(body):
 def process_message(action, metadata, user):
     if action["value"] is None:
         return False
-    response = {k:v for k,v in metadata["event_payload"].items() if k in ["team", "ids", "date"]}
+    response = {k:v for k,v in metadata["event_payload"].items() if k in ["team", "ids", "date", "proposition"]}
     response["message"] = action["value"]
     response["user"] = user
     response["responseTime"] = datetime.fromtimestamp(int(float(action["action_ts"]))).isoformat()
