@@ -32,7 +32,7 @@ def update_secrets(bucket=default_bucket, function_blob="finbot_functions.json",
   for function, func_conf in functions.items():
     region = func_conf["region"]
     description = describe(function, region)
-    secrets = description["secretEnvironmentVariables"]
+    secrets = description.get("secretEnvironmentVariables", {})
     current_secrets = {i["key"]:i["secret"] for i in secrets}
     expected_secrets = get_expected_secrets(function, func_conf, teams)
     missing_secrets = {k:v for k,v in expected_secrets.items() if (k,v) not in current_secrets.items()}
