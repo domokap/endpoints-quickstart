@@ -35,10 +35,10 @@ def update_secrets(bucket=default_bucket, function_blob="finbot_functions.json",
     for cmd in running_cmds:
       retcode = cmd.poll()
       if retcode is not None:
-        if retcode == 0:
+        # if retcode == 0:
           # print(cmd.stdout.read().decode())
-          print()
-        else:
+        # else:
+        if retcode != 0:
           print(cmd.stderr.read().decode())
         running_cmds.remove(cmd)
         break
@@ -46,7 +46,8 @@ def update_secrets(bucket=default_bucket, function_blob="finbot_functions.json",
         time.sleep(.1)
         continue
     print("\r", end="")
-    print("{:.0%} ".format(len(running_cmds)/todo), end="")
+    pct = (len(running_cmds)-todo)/todo
+    print("{:.0%} ".format(pct), end="")
   return True
 
 
@@ -81,7 +82,8 @@ def describe(functions):
         time.sleep(.1)
         continue
     print("\r", end="")
-    print("{:.0%} ".format(len(running_cmds)/todo), end="")
+    pct = (len(running_cmds)-todo)/todo
+    print("{:.0%} ".format(pct), end="")
   return descriptions
 
 
