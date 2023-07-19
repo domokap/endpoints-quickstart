@@ -17,14 +17,19 @@ default_bucket = "nbcu-finops-data-repo"
 
 
 def update_secrets(bucket=default_bucket, function_blob="finbot_functions.json", team_blob="finbot_config.json"):
+  print("Getting function config")
   functions = get_blob(bucket, function_blob)
+  print("Getting team config")
   teams = get_blob(bucket, team_blob)
+  print("Getting function descriptions")
   descriptions = describe(functions)
   current_secrets  = {function:{secret["key"]:secret["secret"] for secret in description.get("secretEnvironmentVariables",{})} for function,description in descriptions.items()}
   expected_secrets = {function:get_expected_secrets(function, func_conf, teams) for function, func_conf in functions.items()}
   missing_secrets = {function:{k:v for k,v in expected_secrets[function].items() if (k,v) not in current_secrets[function].items()} for function in functions.keys()}
   commands = [f"gcloud functions deploy {function} --update-secrets='{secret_arg(missing_secrets[function])}' --trigger-topic='{func_conf['trigger-topic']}' --runtime=python310 --source='gs://{get_source(function,func_conf['region'])}' --entry-point='{func_conf['entry-point']}' --region='{func_conf['region']}'" for function, func_conf in functions.items() if missing_secrets[function] != {}]
   todo = len(commands)
+  print("Updating ", end="")
+  print(*(i for i in functions if missing_secrets[i] != {}), sep=", ")
   running_cmds = [Popen(i, stdout=PIPE, stderr=PIPE, shell=True) for i in commands]
   while running_cmds:
     for cmd in running_cmds:
@@ -32,8 +37,7 @@ def update_secrets(bucket=default_bucket, function_blob="finbot_functions.json",
       if retcode is not None:
         if retcode == 0:
           # print(cmd.stdout.read().decode())
-          print("\r", end="")
-          print("{:.0%} ".format(len(running_cmds)/todo), end="")
+          print()
         else:
           print(cmd.stderr.read().decode())
         running_cmds.remove(cmd)
@@ -41,6 +45,8 @@ def update_secrets(bucket=default_bucket, function_blob="finbot_functions.json",
       else:
         time.sleep(.1)
         continue
+    print("\r", end="")
+    print("{:.0%} ".format(len(running_cmds)/todo), end="")
   return True
 
 
@@ -67,8 +73,6 @@ def describe(functions):
       if retcode is not None:
         if retcode == 0:
           descriptions[cmd.args.split()[-1]] = yaml.safe_load(cmd.stdout.read().decode())
-          print("\r", end="")
-          print("{:.0%} ".format(len(running_cmds)/todo), end="")
         else:
           print(cmd.stderr.read().decode())
         running_cmds.remove(cmd)
@@ -76,6 +80,8 @@ def describe(functions):
       else:
         time.sleep(.1)
         continue
+    print("\r", end="")
+    print("{:.0%} ".format(len(running_cmds)/todo), end="")
   return descriptions
 
 
