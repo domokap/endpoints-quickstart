@@ -24,13 +24,16 @@ def update_secrets(bucket=default_bucket, function_blob="finbot_functions.json",
   expected_secrets = {function:get_expected_secrets(function, func_conf, teams) for function, func_conf in functions.items()}
   missing_secrets = {function:{k:v for k,v in expected_secrets[function].items() if (k,v) not in current_secrets[function].items()} for function in functions.keys()}
   commands = [f"gcloud functions deploy {function} --update-secrets='{secret_arg(missing_secrets[function])}' --trigger-topic='{func_conf['trigger-topic']}' --runtime=python310 --source='gs://{get_source(function,func_conf['region'])}' --entry-point='{func_conf['entry-point']}' --region='{func_conf['region']}'" for function, func_conf in functions.items() if missing_secrets["function"] != {}]
+  todo = len(commands)
   running_cmds = [Popen(i, stdout=PIPE, stderr=PIPE, shell=True) for i in commands]
   while running_cmds:
     for cmd in running_cmds:
       retcode = cmd.poll()
       if retcode is not None:
         if retcode == 0:
-          print(cmd.stdout.read().decode())
+          # print(cmd.stdout.read().decode())
+          print("\r", end="")
+          print("{:.0%} ".format(len(running_cmds)/todo), end="")
         else:
           print(cmd.stderr.read().decode())
         running_cmds.remove(cmd)
@@ -56,14 +59,16 @@ def get_blob(bucket=default_bucket, blob=None):
 def describe(functions):
   descriptions = {}
   commands = [f"gcloud functions describe --region={func_conf['region']} {function}" for function, func_conf in functions.items()]
+  todo = len(commands)
   running_cmds = [Popen(i, stdout=PIPE, stderr=PIPE, shell=True) for i in commands]
   while running_cmds:
     for cmd in running_cmds:
       retcode = cmd.poll()
       if retcode is not None:
         if retcode == 0:
-          # print(cmd.stdout.read().decode())
           descriptions[cmd.args.split()[-1]] = yaml.safe_load(cmd.stdout.read().decode())
+          print("\r", end="")
+          print("{:.0%} ".format(len(running_cmds)/todo), end="")
         else:
           print(cmd.stderr.read().decode())
         running_cmds.remove(cmd)
