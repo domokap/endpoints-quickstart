@@ -27,7 +27,7 @@ def update_secrets(bucket=default_bucket, function_blob="finbot_functions.json",
   descriptions = describe(functions)
   print("Compiling secrets")
   current_secrets  = {function:{secret["key"]:secret["secret"] for secret in description.get("secretEnvironmentVariables",{})} for function, description in descriptions.items()}
-  expected_secrets = {function:get_expected_secrets(function, func_conf, teams) for function, func_conf in functions.items()}
+  expected_secrets = {function:get_expected_secrets(func_conf, teams) for function, func_conf in functions.items()}
   missing_secrets = {function:{k:v for k,v in expected_secrets[function].items() if (k,v) not in current_secrets[function].items()} for function in functions.keys()}
   commands = [f"gcloud functions deploy {function} --update-secrets='{secret_arg(missing_secrets[function])}' --trigger-topic='{func_conf['trigger-topic']}' --runtime=python310 --source='gs://{get_source(function,func_conf['region'])}' --entry-point='{func_conf['entry-point']}' --region='{func_conf['region']}'" for function, func_conf in functions.items() if missing_secrets[function] != {}]
   todo = len(commands); ticker = 0
@@ -99,9 +99,9 @@ def get_source(function, region):
   return source
 
 
-def get_expected_secrets(function, func_conf, teams):
+def get_expected_secrets(func_conf, teams):
   expected_secrets = {}
-  for team, team_conf in teams.items():
+  for team_conf in teams.values():
     if func_conf["custom"] == False:
       if not any(i in func_conf["labels"] for i in team_conf["skip_reports"]):
         expected_secrets[team_conf["webhook_secret"]] = team_conf["secret_name"]
