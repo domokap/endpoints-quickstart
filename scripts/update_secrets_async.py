@@ -40,7 +40,7 @@ def update_secrets(bucket=default_bucket, function_blob="finbot_functions.json",
       if retcode is not None:
         if retcode == 0:
           # print(cmd.stdout.read().decode())
-          print("\r", "\x1b[2K", "Updated ", cmd.args.split()[-1])
+          print("\r", "\x1b[2K", "Updated ", cmd.args.split()[3])
         else:
         # if retcode != 0:
           print(cmd.stderr.read().decode())
