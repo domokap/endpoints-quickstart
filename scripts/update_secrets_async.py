@@ -50,6 +50,7 @@ def update_secrets(bucket=default_bucket, function_blob="finbot_functions.json",
         time.sleep(.1)
       print("\r", "\x1b[2K", "{:.0%} ".format((todo-len(running_cmds))/todo), "."*(int(ticker%5)+1), end=""); ticker += 0.5
   print("\r", "\x1b[2K", "100% .....")
+  print("Done")
   return
 
 
@@ -60,7 +61,7 @@ def get_blob(bucket=default_bucket, blob=None):
     with blob.open("r") as f:
       config = json.loads(f.read())
   except:
-    print(f"NO VALID {blob} FOUND")
+    print(f"No valid {blob.name} found")
     return False
   return config
 
