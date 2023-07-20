@@ -45,8 +45,9 @@ def update_secrets(bucket=default_bucket, function_blob="finbot_functions.json",
       else:
         time.sleep(.1)
         # continue
-      print("     \r", end="")
-      print("{:.0%} ".format((todo-len(running_cmds))/todo), "."*(int(ticker%5)+1), end=""); ticker += 0.5
+      # print("\r", end="\x1b[2K")
+      print("\r", "\x1b[2K", "{:.0%} ".format((todo-len(running_cmds))/todo), "."*(int(ticker%5)+1), end=""); ticker += 0.5
+  print("\r", "\x1b[2K", "100%")
   return True
 
 
@@ -80,8 +81,9 @@ def describe(functions):
       else:
         time.sleep(.1)
         # continue
-      print("     \r", end="")
-      print("{:.0%} ".format((todo-len(running_cmds))/todo), "."*(int(ticker%5)+1), end=""); ticker += 0.5
+      # print("\r", end="\x1b[2K")
+      print("\r", "\x1b[2K", "{:.0%} ".format((todo-len(running_cmds))/todo), "."*(int(ticker%5)+1), end=""); ticker += 0.5
+  print("\r", "\x1b[2K", "100%")
   return descriptions
 
 
