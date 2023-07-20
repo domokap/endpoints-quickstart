@@ -31,16 +31,18 @@ def update_secrets(bucket=default_bucket, function_blob="finbot_functions.json",
   missing_secrets = {function:{k:v for k,v in expected_secrets[function].items() if (k,v) not in current_secrets[function].items()} for function in functions.keys()}
   commands = [f"gcloud functions deploy {function} --update-secrets='{secret_arg(missing_secrets[function])}' --trigger-topic='{func_conf['trigger-topic']}' --runtime=python310 --source='gs://{get_source(function,func_conf['region'])}' --entry-point='{func_conf['entry-point']}' --region='{func_conf['region']}'" for function, func_conf in functions.items() if missing_secrets[function] != {}]
   todo = len(commands); ticker = 0
+  if todo == 0: print("No functions need updating"); return False
   print("Updating ", end=""); print(*(i for i in functions if missing_secrets[i] != {}), sep=", ")
   running_cmds = [Popen(i, stdout=PIPE, stderr=PIPE, shell=True) for i in commands]
   while running_cmds:
     for cmd in running_cmds:
       retcode = cmd.poll()
       if retcode is not None:
-        # if retcode == 0:
+        if retcode == 0:
           # print(cmd.stdout.read().decode())
-        # else:
-        if retcode != 0:
+          print("\r", "\x1b[2K", "Updated ", cmd.args.split()[-1])
+        else:
+        # if retcode != 0:
           print(cmd.stderr.read().decode())
         running_cmds.remove(cmd)
         break
