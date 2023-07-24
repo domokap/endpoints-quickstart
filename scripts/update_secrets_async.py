@@ -93,7 +93,7 @@ def get_blob(bucket=default_bucket, blob=None):
 def describe(functions):
   all_functions = json.loads(subprocess.run("gcloud functions list --filter='name~finbot' --format='json'", shell=True, capture_output=True).stdout.decode())
   all_descriptions = {function["name"].split("/")[-1]:function for function in all_functions}
-  descriptions = {k:v for k,v in all_descriptions if k in functions}
+  descriptions = {k:v for k,v in all_descriptions.items() if k in functions}
   return descriptions
 
 
