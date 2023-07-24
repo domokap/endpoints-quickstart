@@ -16,7 +16,7 @@ default_bucket = "nbcu-finops-data-repo"
 # =============================================================================
 
 
-def update_secrets(bucket=default_bucket, function_blob="finbot_functions.json", team_blob="finbot_config.json"):
+def update_finbot_secrets(bucket=default_bucket, function_blob="finbot_functions.json", team_blob="finbot_config.json"):
   print(f"Getting {function_blob}")
   functions = get_blob(bucket, function_blob)
   if functions is False: return
@@ -66,25 +66,34 @@ def get_blob(bucket=default_bucket, blob=None):
   return config
 
 
+# =============================================================================
+# def describe(functions):
+#   descriptions = {}
+#   commands = [f"gcloud functions describe --region={func_conf['region']} {function}" for function, func_conf in functions.items()]
+#   todo = len(commands); ticker = 0
+#   running_cmds = [Popen(i, stdout=PIPE, stderr=PIPE, shell=True) for i in commands]
+#   while running_cmds:
+#     for cmd in running_cmds:
+#       retcode = cmd.poll()
+#       if retcode is not None:
+#         if retcode == 0:
+#           descriptions[cmd.args.split()[-1]] = yaml.safe_load(cmd.stdout.read().decode())
+#         else:
+#           print(cmd.stderr.read().decode())
+#         running_cmds.remove(cmd)
+#         break
+#       else:
+#         time.sleep(.1)
+#       print("\r", "\x1b[2K", "{:.0%} ".format((todo-len(running_cmds))/todo), "."*(int(ticker%5)+1), end=""); ticker += 0.5
+#   print("\r", "\x1b[2K", "100% .....")
+#   return descriptions
+# =============================================================================
+
+
 def describe(functions):
-  descriptions = {}
-  commands = [f"gcloud functions describe --region={func_conf['region']} {function}" for function, func_conf in functions.items()]
-  todo = len(commands); ticker = 0
-  running_cmds = [Popen(i, stdout=PIPE, stderr=PIPE, shell=True) for i in commands]
-  while running_cmds:
-    for cmd in running_cmds:
-      retcode = cmd.poll()
-      if retcode is not None:
-        if retcode == 0:
-          descriptions[cmd.args.split()[-1]] = yaml.safe_load(cmd.stdout.read().decode())
-        else:
-          print(cmd.stderr.read().decode())
-        running_cmds.remove(cmd)
-        break
-      else:
-        time.sleep(.1)
-      print("\r", "\x1b[2K", "{:.0%} ".format((todo-len(running_cmds))/todo), "."*(int(ticker%5)+1), end=""); ticker += 0.5
-  print("\r", "\x1b[2K", "100% .....")
+  all_functions = json.loads(subprocess.run("gcloud functions list --filter='name~finbot' --format='json'", shell=True, capture_output=True).stdout.decode())
+  all_descriptions = {function["name"].split("/")[-1]:function for function in all_functions}
+  descriptions = {k:v for k,v in all_descriptions if k in functions}
   return descriptions
 
 
