@@ -121,9 +121,14 @@ def get_expected_secrets(func_conf, teams):
   return expected_secrets
 
 
+# =============================================================================
+# def secret_arg(missing_secrets):
+#   arg = ""
+#   for k,v in missing_secrets.items():
+#     arg += f"{k}={v}:latest,"
+#   return arg[:-1]
+# =============================================================================
+
 def secret_arg(missing_secrets):
-  arg = ""
-  for k,v in missing_secrets.items():
-    arg += f"{k}={v}:latest,"
-  return arg[:-1]
+  return ",".join([f"{k}={v}:latest" for k,v in missing_secrets.items()])
 
